@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://qscan.in/sitemap.xml
