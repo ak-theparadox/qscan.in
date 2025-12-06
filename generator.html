@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>QScan.in — QR Generator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#020617" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="stylesheet" href="/assets/css/style.css" />
+</head>
+<body>
+  <header class="top-bar">
+    <div class="brand">
+      <span class="logo-dot"></span>
+      <span class="brand-text">QScan.in</span>
+    </div>
+    <nav class="nav">
+      <a href="/" class="nav-link">Scan</a>
+      <a href="/generator.html" class="nav-link active">Generate</a>
+    </nav>
+  </header>
+
+  <main class="main">
+    <section class="hero">
+      <h1>Generate QR Code</h1>
+      <p class="hero-sub">Create QR codes for links, text, IDs and more.</p>
+    </section>
+
+    <section class="scanner-card">
+      <label for="qr-text" class="label">Text / URL</label>
+      <textarea id="qr-text" class="textarea" rows="4" placeholder="Type or paste text/URL here..."></textarea>
+
+      <div class="controls">
+        <button id="generate-btn" class="btn primary">Generate</button>
+        <button id="download-btn" class="btn" disabled>Download PNG</button>
+      </div>
+
+      <div id="qr-output" class="qr-output">
+        <p class="muted small">Your QR code will appear here.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p class="muted">Generated on your device • Nothing uploaded.</p>
+  </footer>
+
+  <!-- QRCode library for generator -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+  <script src="/assets/js/script.js"></script>
+</body>
+</html>
