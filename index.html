@@ -1,13 +1,61 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>QScan Test</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <title>QScan.in — QR & Barcode Scanner</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#020617" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="stylesheet" href="/assets/css/style.css" />
 </head>
 <body>
+  <header class="top-bar">
+    <div class="brand">
+      <span class="logo-dot"></span>
+      <span class="brand-text">QScan.in</span>
+    </div>
+    <nav class="nav">
+      <a href="/" class="nav-link active">Scan</a>
+      <a href="/generator.html" class="nav-link">Generate</a>
+    </nav>
+  </header>
 
-<h1>Hey,welcome to qscan.in</h1>
+  <main class="main">
+    <section class="hero">
+      <h1>Scan QR & Barcodes</h1>
+      <p class="hero-sub">Fast, private, on-device scanning. No history stored.</p>
+    </section>
 
+    <section class="scanner-card">
+      <div class="video-wrapper">
+        <video id="preview" playsinline muted></video>
+        <div class="scan-frame"></div>
+      </div>
+
+      <div class="controls">
+        <button id="start-btn" class="btn primary">Start scanning</button>
+        <button id="stop-btn" class="btn" disabled>Stop</button>
+        <button id="torch-btn" class="btn" disabled>Torch</button>
+        <select id="camera-select" class="select"></select>
+      </div>
+
+      <div class="result">
+        <h2>Result</h2>
+        <p id="result-text" class="muted">Nothing scanned yet.</p>
+        <div class="result-actions">
+          <button id="copy-btn" class="btn small" disabled>Copy</button>
+          <button id="open-btn" class="btn small" disabled>Open link</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p class="muted">Made for mobile • No data leaves your device.</p>
+  </footer>
+
+  <!-- ZXing library for QR + barcode scanning -->
+  <script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.18.6/umd/index.min.js"></script>
+  <script src="/assets/js/script.js"></script>
 </body>
-</html>
+  </html>
