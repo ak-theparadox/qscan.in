@@ -8,7 +8,7 @@
   backdrop-filter: blur(14px);
 }
 
-/* CLEAN RECTANGULAR SCANNER — NO GLOW, NO CORNERS */
+/* PURE CAMERA — NO BORDER, NO OVERLAY */
 .video-wrapper {
   width: 100%;
   aspect-ratio: 3/4;
@@ -24,17 +24,18 @@
   height: 100%;
 }
 
-/* REMOVE ANIMATION + REMOVE CORNERS */
-.scan-border {
-  position: absolute;
-  inset: 0;
-  border-radius: 20px;
-  border: 2px solid rgba(77,159,255,0.35); /* clean thin border */
-  pointer-events: none;
-  animation: none !important; /* remove glow */
+#preview video {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
 }
 
-/* REMOVE ANY PSEUDO-ELEMENT CORNERS */
+/* REMOVE scan-border COMPLETELY */
+.scan-border {
+  display: none !important;
+}
+
+/* REMOVE ALL CORNER PSEUDO ELEMENTS */
 .scan-border::before,
 .scan-border::after,
 .video-wrapper::before,
@@ -43,5 +44,5 @@
   display: none !important;
 }
 
-/* (REMOVE old animation entirely) */
+/* Remove old animation keyframe */
 @keyframes glowBorder { }
