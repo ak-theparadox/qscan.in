@@ -4,58 +4,67 @@
   <meta charset="UTF-8" />
   <title>QScan.in — QR & Barcode Scanner</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#020617" />
+  <meta name="theme-color" content="#0b0f19" />
   <link rel="manifest" href="/manifest.webmanifest" />
   <link rel="stylesheet" href="/assets/css/style.css" />
 </head>
+
 <body>
-  <header class="top-bar">
-    <div class="brand">
-      <span class="logo-dot"></span>
-      <span class="brand-text">QuickScan</span>
+<header class="top-bar">
+  <div class="brand">
+    <span class="logo-dot"></span>
+    <span class="brand-text">QuickScan</span>
+  </div>
+
+  <nav class="nav">
+    <a href="/" class="nav-link active">Scan</a>
+    <a href="/generator.html" class="nav-link">Generate</a>
+  </nav>
+</header>
+
+<main class="main">
+  <section class="hero">
+    <h1>Scan Any QR / Barcode</h1>
+  </section>
+
+  <section class="scanner-card">
+
+    <div class="video-wrapper">
+      <div id="preview"></div>
+
+      <!-- Circular scanning frame -->
+      <div class="scan-frame"></div>
+
+      <!-- Moving Scan Line -->
+      <div class="scan-line"></div>
+
+      <!-- + upload button -->
+      <button id="upload-btn" class="fab-btn">+</button>
+      <input type="file" id="file-input" accept="image/*" hidden>
     </div>
-    <nav class="nav">
-      <a href="/" class="nav-link active">Scan</a>
-      <a href="/generator.html" class="nav-link">Generate</a>
-    </nav>
-  </header>
 
-  <main class="main">
-    <section class="hero">
-      <h1>Scan</h1>
-    </section>
+    <div class="controls">
+      <button id="start-btn" class="btn primary center-btn">Start Scanning</button>
+      <button id="flip-btn" class="btn small">Switch Camera</button>
+    </div>
 
-    <section class="scanner-card">
-      <div class="video-wrapper">
-        <!-- html5-qrcode mounts into this DIV -->
-        <div id="preview"></div>
-        <div class="scan-frame"></div>
+    <div class="result">
+      <h2>Result</h2>
+      <p id="result-text" class="muted">Nothing scanned yet.</p>
+
+      <div class="result-actions">
+        <button id="copy-btn" class="btn small" disabled>Copy</button>
+        <button id="open-btn" class="btn small" disabled>Open</button>
       </div>
+    </div>
+  </section>
+</main>
 
-      <div class="controls">
-        <button id="start-btn" class="btn primary">Start scanning</button>
-        <button id="stop-btn" class="btn" disabled>Stop</button>
-        <button id="torch-btn" class="btn" disabled>Torch</button>
-        <select id="camera-select" class="select"></select>
-      </div>
+<footer class="footer">
+  <p class="muted">Made with 💛 in India</p>
+</footer>
 
-      <div class="result">
-        <h2>Result</h2>
-        <p id="result-text" class="muted">Nothing scanned yet.</p>
-        <div class="result-actions">
-          <button id="copy-btn" class="btn small" disabled>Copy</button>
-          <button id="open-btn" class="btn small" disabled>Open link</button>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer class="footer">
-    <p class="muted">Made with 💛 in India</p>
-  </footer>
-
-  <!-- Html5-Qrcode library -->
-  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-  <script src="/assets/js/script.js"></script>
+<script src="https://unpkg.com/html5-qrcode"></script>
+<script src="/assets/js/script.js"></script>
 </body>
 </html>
