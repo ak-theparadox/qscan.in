@@ -1,9 +1,7 @@
 function initScanner() {
   const previewId = "preview";
 
-  const startBtn = document.getElementById("start-btn");
   const flipBtn = document.getElementById("flip-btn");
-
   const uploadBtn = document.getElementById("upload-btn");
   const fileInput = document.getElementById("file-input");
 
@@ -15,12 +13,9 @@ function initScanner() {
   let usingBack = true;
   let cameraId = null;
 
-  startBtn.onclick = async () => {
-    startBtn.disabled = true;
-    startBtn.textContent = "Scanning...";
-
+  // AUTO START
+  async function startCamera() {
     const cameras = await Html5Qrcode.getCameras();
-
     if (cameras.length === 0) {
       resultText.textContent = "No cameras found";
       return;
@@ -35,28 +30,31 @@ function initScanner() {
       cameraId,
       {
         fps: 15,
-        qrbox: { width: 260, height: 260 },
+        qrbox: 260,
         experimentalFeatures: { useBarCodeDetectorIfSupported: true }
       },
-      (decoded) => {
+      decoded => {
         resultText.textContent = decoded;
         copyBtn.disabled = false;
         openBtn.disabled = !decoded.startsWith("http");
       }
     );
-  };
+  }
 
+  startCamera();
+
+  // SWITCH CAMERA
   flipBtn.onclick = async () => {
     if (!html5QrCode) return;
 
     usingBack = !usingBack;
-    const cams = await Html5Qrcode.getCameras();
 
-    let chosen = cams.find(c =>
+    const cams = await Html5Qrcode.getCameras();
+    let cam = cams.find(c =>
       c.label.toLowerCase().includes(usingBack ? "back" : "front")
     ) || cams[0];
 
-    cameraId = chosen.id;
+    cameraId = cam.id;
 
     await html5QrCode.stop();
     await html5QrCode.start(
@@ -66,6 +64,7 @@ function initScanner() {
     );
   };
 
+  // UPLOAD SCAN
   uploadBtn.onclick = () => fileInput.click();
 
   fileInput.onchange = async (e) => {
@@ -77,10 +76,8 @@ function initScanner() {
       try {
         const res = await Html5Qrcode.scanImage(reader.result, false);
         resultText.textContent = res;
-
         copyBtn.disabled = false;
         openBtn.disabled = !res.startsWith("http");
-
       } catch {
         resultText.textContent = "Invalid QR / Barcode";
       }
@@ -92,8 +89,8 @@ function initScanner() {
     navigator.clipboard.writeText(resultText.textContent);
 
   openBtn.onclick = () => {
-    const t = resultText.textContent;
-    if (t.startsWith("http")) window.open(t, "_blank");
+    const text = resultText.textContent;
+    if (text.startsWith("http")) window.open(text, "_blank");
   };
 }
 
