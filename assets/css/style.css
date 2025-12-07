@@ -8,7 +8,7 @@
   backdrop-filter: blur(14px);
 }
 
-/* PURE CAMERA — NO BORDER, NO OVERLAY */
+/* CAMERA VIEW WITH CLEAN BORDER */
 .video-wrapper {
   width: 100%;
   aspect-ratio: 3/4;
@@ -30,12 +30,17 @@
   object-fit: cover !important;
 }
 
-/* REMOVE scan-border COMPLETELY */
+/* CLEAN SCANNER BORDER (no animation, no glow) */
 .scan-border {
-  display: none !important;
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  border: 2px solid rgba(77,159,255,0.45);  /* ✨ thin clean blue border */
+  pointer-events: none;
+  animation: none !important;
 }
 
-/* REMOVE ALL CORNER PSEUDO ELEMENTS */
+/* REMOVE ANY POSSIBLE CORNERS */
 .scan-border::before,
 .scan-border::after,
 .video-wrapper::before,
@@ -44,5 +49,5 @@
   display: none !important;
 }
 
-/* Remove old animation keyframe */
-@keyframes glowBorder { }
+/* Disable old glow animation entirely */
+@keyframes glowBorder {}
