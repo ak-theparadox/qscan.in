@@ -17,158 +17,95 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // --- SCANNER LOGIC ---
 function initScanner() {
-  const video = document.getElementById('preview');
+  const video = document.getElementById("preview");
   if (!video) return;
 
-  const startBtn = document.getElementById('start-btn');
-  const stopBtn = document.getElementById('stop-btn');
-  const torchBtn = document.getElementById('torch-btn');
-  const cameraSelect = document.getElementById('camera-select');
-  const resultText = document.getElementById('result-text');
-  const copyBtn = document.getElementById('copy-btn');
-  const openBtn = document.getElementById('open-btn');
+  const startBtn = document.getElementById("start-btn");
+  const stopBtn = document.getElementById("stop-btn");
+  const torchBtn = document.getElementById("torch-btn");
+  const cameraSelect = document.getElementById("camera-select");
+  const resultText = document.getElementById("result-text");
+  const copyBtn = document.getElementById("copy-btn");
+  const openBtn = document.getElementById("open-btn");
 
-  let stream = null;
-  let codeReader = null;
-  let scanning = false;
+  let scanner = null;
   let torchOn = false;
 
-  const ZX = window.ZXing;
-
-  // FORCE BARCODE FORMATS
-  const hints = new Map();
-  const formats = [
-    ZX.BarcodeFormat.QR_CODE,
-    ZX.BarcodeFormat.DATA_MATRIX,
-    ZX.BarcodeFormat.AZTEC,
-    ZX.BarcodeFormat.PDF_417,
-    ZX.BarcodeFormat.EAN_13,
-    ZX.BarcodeFormat.EAN_8,
-    ZX.BarcodeFormat.UPC_A,
-    ZX.BarcodeFormat.CODE_128,
-    ZX.BarcodeFormat.CODE_39,
-    ZX.BarcodeFormat.ITF
-  ];
-  hints.set(ZX.DecodeHintType.POSSIBLE_FORMATS, formats);
-
-  async function listCameras() {
-    const devices = await ZX.BrowserMultiFormatReader.listVideoInputDevices();
-    cameraSelect.innerHTML = "";
-    devices.forEach(d => {
-      const opt = document.createElement("option");
-      opt.value = d.deviceId;
-      opt.textContent = d.label || "Camera";
-      cameraSelect.appendChild(opt);
-    });
-  }
-
-  async function startScanner() {
+  startBtn.onclick = async () => {
     try {
-      resultText.textContent = "Requesting camera...";
       startBtn.disabled = true;
+      resultText.textContent = "Starting camera...";
 
-      await listCameras();
-
-      const selectedCam = cameraSelect.value;
-      stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          deviceId: selectedCam ? { exact: selectedCam } : undefined,
-          width: { ideal: 1920 },
-          height: { ideal: 1080 },
-          facingMode: "environment"
+      scanner = new ScannerJS.Scanner({
+        video: video,
+        scanQRCode: true,
+        scanBarCode: true,
+        mirror: false,
+        continuous: true,
+        onDetected: (result) => {
+          resultText.textContent = result.rawValue;
+          copyBtn.disabled = false;
+          openBtn.disabled = !/^https?:\/\//i.test(result.rawValue);
         }
       });
 
-      video.srcObject = stream;
-      await video.play();
+      const devices = await ScannerJS.listCameras();
+      cameraSelect.innerHTML = "";
+      devices.forEach((cam, index) => {
+        const opt = document.createElement("option");
+        opt.value = cam.id;
+        opt.textContent = cam.label || `Camera ${index + 1}`;
+        cameraSelect.appendChild(opt);
+      });
 
-      codeReader = new ZX.BrowserMultiFormatReader(hints);
+      await scanner.start();
 
-      scanning = true;
       stopBtn.disabled = false;
+      torchBtn.disabled = false;
       resultText.textContent = "Scanning...";
 
-      detectLoop();
-      updateTorchSupport();
-
-    } catch (e) {
-      console.error(e);
-      resultText.textContent = "Camera error: " + e.message;
-      startBtn.disabled = false;
-    }
-  }
-
-  async function detectLoop() {
-    if (!scanning) return;
-
-    try {
-      const result = await codeReader.decodeOnceFromVideoElement(video);
-      if (result) {
-        const text = result.getText();
-        resultText.textContent = text;
-
-        copyBtn.disabled = false;
-        openBtn.disabled = !/^https?:\/\//i.test(text);
-
-        // Continue scanning after short delay
-        setTimeout(() => detectLoop(), 400);
-        return;
-      }
     } catch (err) {
-      // Normal scanning misses — ignore
-      setTimeout(() => detectLoop(), 120);
-      return;
+      console.error(err);
+      resultText.textContent = "Camera error: " + err.message;
+      startBtn.disabled = false;
+      stopBtn.disabled = true;
+      torchBtn.disabled = true;
     }
-  }
+  };
 
-  function stopScanner() {
-    scanning = false;
-
-    if (stream) {
-      stream.getTracks().forEach(t => t.stop());
-    }
-
-    resultText.textContent = "Stopped.";
+  stopBtn.onclick = () => {
+    if (scanner) scanner.stop();
     startBtn.disabled = false;
     stopBtn.disabled = true;
     torchBtn.disabled = true;
-  }
+    resultText.textContent = "Stopped.";
+  };
 
-  async function toggleTorch() {
-    if (!stream) return;
+  torchBtn.onclick = async () => {
+    if (!scanner) return;
 
-    const track = stream.getVideoTracks()[0];
-    const caps = track.getCapabilities();
-    if (!caps.torch) {
+    try {
+      torchOn = !torchOn;
+      await scanner.toggleTorch(torchOn);
+      torchBtn.textContent = torchOn ? "Torch ON" : "Torch";
+    } catch (err) {
       alert("Torch not supported on this device.");
-      return;
+      torchOn = false;
     }
+  };
 
-    torchOn = !torchOn;
-    await track.applyConstraints({ advanced: [{ torch: torchOn }] });
-    torchBtn.textContent = torchOn ? "Torch ON" : "Torch";
-  }
-
-  function updateTorchSupport() {
-    const track = stream.getVideoTracks()[0];
-    const caps = track.getCapabilities();
-    if (caps.torch) {
-      torchBtn.disabled = false;
-    }
-  }
-
-  // Events
-  startBtn.onclick = startScanner;
-  stopBtn.onclick = stopScanner;
-  torchBtn.onclick = toggleTorch;
+  cameraSelect.onchange = async () => {
+    if (!scanner) return;
+    await scanner.switchCamera(cameraSelect.value);
+  };
 
   copyBtn.onclick = async () => {
     await navigator.clipboard.writeText(resultText.textContent);
   };
 
   openBtn.onclick = () => {
-    const text = resultText.textContent;
-    if (/^https?:\/\//i.test(text)) window.open(text, "_blank");
+    const t = resultText.textContent;
+    if (/^https?:\/\//i.test(t)) window.open(t, "_blank");
   };
 }
 
