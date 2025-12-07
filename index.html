@@ -22,12 +22,15 @@
 
   <main class="main">
     <section class="hero">
-      <h1>Scan Any Qrcode/Barcode</h1>
+      <h1>Scan Any QR Code / Barcode</h1>
     </section>
 
     <section class="scanner-card">
       <div class="video-wrapper">
-        <video id="preview" playsinline muted></video>
+
+        <!-- IMPORTANT: html5-qrcode requires a DIV, not a VIDEO -->
+        <div id="preview"></div>
+
         <div class="scan-frame"></div>
       </div>
 
@@ -53,8 +56,8 @@
     <p class="muted">Made with 💛 in India</p>
   </footer>
 
-  <!-- Html library for QR + barcode scanning -->
-<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-<script src="/assets/js/script.js"></script>
+  <!-- Html5-Qrcode library -->
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <script src="/assets/js/script.js"></script>
 </body>
-  </html>
+</html>
