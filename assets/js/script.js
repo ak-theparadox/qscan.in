@@ -17,95 +17,168 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // --- SCANNER LOGIC ---
 function initScanner() {
-  const video = document.getElementById("preview");
-  if (!video) return;
+  const previewElementId = "preview";
 
   const startBtn = document.getElementById("start-btn");
   const stopBtn = document.getElementById("stop-btn");
   const torchBtn = document.getElementById("torch-btn");
   const cameraSelect = document.getElementById("camera-select");
+
   const resultText = document.getElementById("result-text");
   const copyBtn = document.getElementById("copy-btn");
   const openBtn = document.getElementById("open-btn");
 
-  let scanner = null;
-  let torchOn = false;
+  let html5QrCode = null;
+  let currentCameraId = null;
+  let torchEnabled = false;
 
+  // --- Start scanning ---
   startBtn.onclick = async () => {
     try {
       startBtn.disabled = true;
-      resultText.textContent = "Starting camera...";
+      resultText.textContent = "Requesting camera...";
 
-      scanner = new ScannerJS.Scanner({
-        video: video,
-        scanQRCode: true,
-        scanBarCode: true,
-        mirror: false,
-        continuous: true,
-        onDetected: (result) => {
-          resultText.textContent = result.rawValue;
-          copyBtn.disabled = false;
-          openBtn.disabled = !/^https?:\/\//i.test(result.rawValue);
-        }
-      });
+      // List cameras
+      const devices = await Html5Qrcode.getCameras();
+      if (!devices || devices.length === 0) {
+        resultText.textContent = "No cameras found.";
+        startBtn.disabled = false;
+        return;
+      }
 
-      const devices = await ScannerJS.listCameras();
       cameraSelect.innerHTML = "";
-      devices.forEach((cam, index) => {
-        const opt = document.createElement("option");
-        opt.value = cam.id;
-        opt.textContent = cam.label || `Camera ${index + 1}`;
-        cameraSelect.appendChild(opt);
+      devices.forEach(device => {
+        const option = document.createElement("option");
+        option.value = device.id;
+        option.textContent = device.label || "Camera";
+        cameraSelect.appendChild(option);
       });
 
-      await scanner.start();
+      currentCameraId = cameraSelect.value;
 
-      stopBtn.disabled = false;
-      torchBtn.disabled = false;
+      html5QrCode = new Html5Qrcode(previewElementId);
+
+      // Scan config
+      const config = {
+        fps: 15,
+        qrbox: { width: 250, height: 250 },
+        rememberLastUsedCamera: true,
+        experimentalFeatures: { useBarCodeDetectorIfSupported: true }
+      };
+
+      await html5QrCode.start(
+        currentCameraId,
+        config,
+        (decodedText) => {
+          resultText.textContent = decodedText;
+
+          copyBtn.disabled = false;
+          openBtn.disabled = !/^https?:\/\//i.test(decodedText);
+        },
+        (errorMessage) => {
+          // ignore scan misses
+        }
+      );
+
       resultText.textContent = "Scanning...";
+      stopBtn.disabled = false;
+
+      // Try enabling torch
+      enableTorchIfSupported(html5QrCode);
 
     } catch (err) {
       console.error(err);
-      resultText.textContent = "Camera error: " + err.message;
+      resultText.textContent = "Camera error: " + err;
+      startBtn.disabled = false;
+    }
+  };
+
+  // --- Stop scanning ---
+  stopBtn.onclick = async () => {
+    if (!html5QrCode) return;
+
+    try {
+      await html5QrCode.stop();
       startBtn.disabled = false;
       stopBtn.disabled = true;
       torchBtn.disabled = true;
-    }
-  };
-
-  stopBtn.onclick = () => {
-    if (scanner) scanner.stop();
-    startBtn.disabled = false;
-    stopBtn.disabled = true;
-    torchBtn.disabled = true;
-    resultText.textContent = "Stopped.";
-  };
-
-  torchBtn.onclick = async () => {
-    if (!scanner) return;
-
-    try {
-      torchOn = !torchOn;
-      await scanner.toggleTorch(torchOn);
-      torchBtn.textContent = torchOn ? "Torch ON" : "Torch";
+      resultText.textContent = "Stopped.";
     } catch (err) {
-      alert("Torch not supported on this device.");
-      torchOn = false;
+      console.error(err);
     }
   };
 
+  // --- Switch camera ---
   cameraSelect.onchange = async () => {
-    if (!scanner) return;
-    await scanner.switchCamera(cameraSelect.value);
+    if (!html5QrCode) return;
+
+    currentCameraId = cameraSelect.value;
+    await html5QrCode.stop();
+    await html5QrCode.start(
+      currentCameraId,
+      { fps: 15, qrbox: 250, experimentalFeatures: { useBarCodeDetectorIfSupported: true } },
+      (decodedText) => {
+        resultText.textContent = decodedText;
+
+        copyBtn.disabled = false;
+        openBtn.disabled = !/^https?:\/\//i.test(decodedText);
+      }
+    );
+
+    enableTorchIfSupported(html5QrCode);
   };
 
+  // --- Torch toggle ---
+  async function enableTorchIfSupported(qrInstance) {
+    try {
+      const track = qrInstance.getState()?.stream?.getVideoTracks()[0];
+      const capabilities = track?.getCapabilities();
+
+      if (capabilities && capabilities.torch) {
+        torchBtn.disabled = false;
+
+        torchBtn.onclick = async () => {
+          try {
+            torchEnabled = !torchEnabled;
+
+            await track.applyConstraints({
+              advanced: [{ torch: torchEnabled }]
+            });
+
+            torchBtn.textContent = torchEnabled ? "Torch ON" : "Torch";
+
+          } catch (err) {
+            console.error("Torch error:", err);
+            alert("Torch not supported on this device.");
+            torchEnabled = false;
+          }
+        };
+      } else {
+        torchBtn.disabled = true;
+      }
+
+    } catch (err) {
+      torchBtn.disabled = true;
+    }
+  }
+
+  // --- Copy result ---
   copyBtn.onclick = async () => {
-    await navigator.clipboard.writeText(resultText.textContent);
+    try {
+      await navigator.clipboard.writeText(resultText.textContent);
+      copyBtn.textContent = "Copied!";
+      setTimeout(() => { copyBtn.textContent = "Copy"; }, 1200);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
+  // --- Open link ---
   openBtn.onclick = () => {
-    const t = resultText.textContent;
-    if (/^https?:\/\//i.test(t)) window.open(t, "_blank");
+    const text = resultText.textContent;
+    if (/^https?:\/\//i.test(text)) {
+      window.open(text, "_blank");
+    }
   };
 }
 
