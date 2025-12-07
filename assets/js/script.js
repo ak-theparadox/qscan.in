@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // --- SCANNER LOGIC ---
 function initScanner() {
   const video = document.getElementById('preview');
-  if (!video) return; // not on scanner page
+  if (!video) return;
 
   const startBtn = document.getElementById('start-btn');
   const stopBtn = document.getElementById('stop-btn');
@@ -28,158 +28,148 @@ function initScanner() {
   const copyBtn = document.getElementById('copy-btn');
   const openBtn = document.getElementById('open-btn');
 
-  let codeReader;
-  let currentStream = null;
+  let stream = null;
+  let codeReader = null;
+  let scanning = false;
   let torchOn = false;
 
   const ZX = window.ZXing;
-  if (!ZX) {
-    resultText.textContent = 'Scanner library failed to load.';
-    return;
-  }
 
-  codeReader = new ZX.BrowserMultiFormatReader();
+  // FORCE BARCODE FORMATS
+  const hints = new Map();
+  const formats = [
+    ZX.BarcodeFormat.QR_CODE,
+    ZX.BarcodeFormat.DATA_MATRIX,
+    ZX.BarcodeFormat.AZTEC,
+    ZX.BarcodeFormat.PDF_417,
+    ZX.BarcodeFormat.EAN_13,
+    ZX.BarcodeFormat.EAN_8,
+    ZX.BarcodeFormat.UPC_A,
+    ZX.BarcodeFormat.CODE_128,
+    ZX.BarcodeFormat.CODE_39,
+    ZX.BarcodeFormat.ITF
+  ];
+  hints.set(ZX.DecodeHintType.POSSIBLE_FORMATS, formats);
 
   async function listCameras() {
-    try {
-      const devices = await ZX.BrowserMultiFormatReader.listVideoInputDevices();
-      cameraSelect.innerHTML = '';
-      devices.forEach((d, i) => {
-        const opt = document.createElement('option');
-        opt.value = d.deviceId;
-        opt.textContent = d.label || `Camera ${i + 1}`;
-        cameraSelect.appendChild(opt);
-      });
-    } catch (e) {
-      console.error(e);
-    }
+    const devices = await ZX.BrowserMultiFormatReader.listVideoInputDevices();
+    cameraSelect.innerHTML = "";
+    devices.forEach(d => {
+      const opt = document.createElement("option");
+      opt.value = d.deviceId;
+      opt.textContent = d.label || "Camera";
+      cameraSelect.appendChild(opt);
+    });
   }
 
-  async function start() {
+  async function startScanner() {
     try {
+      resultText.textContent = "Requesting camera...";
       startBtn.disabled = true;
-      resultText.textContent = 'Requesting camera permission...';
 
       await listCameras();
-      let deviceId = cameraSelect.value || undefined;
 
-      // Start scanning
-      const selectedDeviceId = deviceId || undefined;
-      await codeReader.decodeFromVideoDevice(
-        selectedDeviceId,
-        'preview',
-        (result, err, controls) => {
-          if (result) {
-            const text = result.getText();
-            resultText.textContent = text;
-
-            copyBtn.disabled = false;
-            openBtn.disabled = !/^https?:\/\//i.test(text);
-          }
-          if (err && !(err instanceof ZX.NotFoundException)) {
-            console.error(err);
-          }
-
-          // capture stream reference for torch
-          if (!currentStream && video.srcObject) {
-            currentStream = video.srcObject;
-            updateTorchButton();
-          }
+      const selectedCam = cameraSelect.value;
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          deviceId: selectedCam ? { exact: selectedCam } : undefined,
+          width: { ideal: 1920 },
+          height: { ideal: 1080 },
+          facingMode: "environment"
         }
-      );
+      });
 
+      video.srcObject = stream;
+      await video.play();
+
+      codeReader = new ZX.BrowserMultiFormatReader(hints);
+
+      scanning = true;
       stopBtn.disabled = false;
-      torchBtn.disabled = false;
-      resultText.textContent = 'Scanning...';
+      resultText.textContent = "Scanning...";
+
+      detectLoop();
+      updateTorchSupport();
 
     } catch (e) {
       console.error(e);
-      resultText.textContent = 'Error starting camera: ' + (e.message || e);
+      resultText.textContent = "Camera error: " + e.message;
       startBtn.disabled = false;
-      stopBtn.disabled = true;
-      torchBtn.disabled = true;
     }
   }
 
-  function stop() {
+  async function detectLoop() {
+    if (!scanning) return;
+
     try {
-      codeReader.reset();
-    } catch (e) {
-      console.error(e);
+      const result = await codeReader.decodeOnceFromVideoElement(video);
+      if (result) {
+        const text = result.getText();
+        resultText.textContent = text;
+
+        copyBtn.disabled = false;
+        openBtn.disabled = !/^https?:\/\//i.test(text);
+
+        // Continue scanning after short delay
+        setTimeout(() => detectLoop(), 400);
+        return;
+      }
+    } catch (err) {
+      // Normal scanning misses — ignore
+      setTimeout(() => detectLoop(), 120);
+      return;
     }
-    if (currentStream) {
-      currentStream.getTracks().forEach(t => t.stop());
-      currentStream = null;
+  }
+
+  function stopScanner() {
+    scanning = false;
+
+    if (stream) {
+      stream.getTracks().forEach(t => t.stop());
     }
-    torchOn = false;
-    resultText.textContent = 'Stopped.';
+
+    resultText.textContent = "Stopped.";
     startBtn.disabled = false;
     stopBtn.disabled = true;
     torchBtn.disabled = true;
   }
 
   async function toggleTorch() {
-    if (!currentStream) return;
-    const track = currentStream.getVideoTracks()[0];
-    if (!track) return;
+    if (!stream) return;
 
-    const caps = track.getCapabilities ? track.getCapabilities() : {};
-    if (!('torch' in caps)) {
-      alert('Torch not supported on this device/browser.');
+    const track = stream.getVideoTracks()[0];
+    const caps = track.getCapabilities();
+    if (!caps.torch) {
+      alert("Torch not supported on this device.");
       return;
     }
 
     torchOn = !torchOn;
-    try {
-      await track.applyConstraints({ advanced: [{ torch: torchOn }] });
-      torchBtn.textContent = torchOn ? 'Torch ON' : 'Torch';
-    } catch (e) {
-      console.error(e);
-      alert('Unable to toggle torch.');
-      torchOn = false;
-      torchBtn.textContent = 'Torch';
-    }
+    await track.applyConstraints({ advanced: [{ torch: torchOn }] });
+    torchBtn.textContent = torchOn ? "Torch ON" : "Torch";
   }
 
-  function updateTorchButton() {
-    // enable torch button only if track supports it
-    if (!currentStream) return;
-    const track = currentStream.getVideoTracks()[0];
-    if (!track || !track.getCapabilities) return;
+  function updateTorchSupport() {
+    const track = stream.getVideoTracks()[0];
     const caps = track.getCapabilities();
-    if ('torch' in caps) {
+    if (caps.torch) {
       torchBtn.disabled = false;
     }
   }
 
-  startBtn.addEventListener('click', start);
-  stopBtn.addEventListener('click', stop);
-  torchBtn.addEventListener('click', toggleTorch);
+  // Events
+  startBtn.onclick = startScanner;
+  stopBtn.onclick = stopScanner;
+  torchBtn.onclick = toggleTorch;
 
-  cameraSelect.addEventListener('change', () => {
-    if (!startBtn.disabled) return;
-    // restart with new camera
-    stop();
-    start();
-  });
+  copyBtn.onclick = async () => {
+    await navigator.clipboard.writeText(resultText.textContent);
+  };
 
-  copyBtn.addEventListener('click', async () => {
-    const text = resultText.textContent || '';
-    try {
-      await navigator.clipboard.writeText(text);
-      copyBtn.textContent = 'Copied!';
-      setTimeout(() => (copyBtn.textContent = 'Copy'), 1200);
-    } catch (e) {
-      console.error(e);
-    }
-  });
-
-  openBtn.addEventListener('click', () => {
-    const text = resultText.textContent || '';
-    if (/^https?:\/\//i.test(text)) {
-      window.open(text, '_blank');
-    }
-  });
+  openBtn.onclick = () => {
+    const text = resultText.textContent;
+    if (/^https?:\/\//i.test(text)) window.open(text, "_blank");
+  };
 }
 
 // --- GENERATOR LOGIC ---
