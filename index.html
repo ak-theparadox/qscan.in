@@ -10,6 +10,7 @@
 </head>
 
 <body>
+
 <header class="top-bar">
   <div class="brand">
     <span class="logo-dot"></span>
@@ -23,6 +24,7 @@
 </header>
 
 <main class="main">
+
   <section class="hero">
     <h1>Scan Any QR / Barcode</h1>
   </section>
@@ -32,27 +34,30 @@
     <div class="video-wrapper">
       <div id="preview"></div>
 
-      <!-- Animated border -->
+      <!-- Animated glowing border -->
       <div class="scan-border"></div>
+    </div>
 
-      <!-- Upload button -->
-      <button id="upload-btn" class="fab-btn">+</button>
+    <div class="controls-row">
+      <button id="flip-btn" class="btn small">Switch Camera</button>
+      <button id="upload-btn" class="btn small fab-inline">+</button>
       <input type="file" id="file-input" accept="image/*" hidden>
     </div>
 
-    <div class="controls">
-      <button id="flip-btn" class="btn small">Switch Camera</button>
-    </div>
+    <!-- Result Popup Dialog -->
+    <div id="result-popup" class="result-popup hidden">
+      <button class="close-btn" id="close-popup">×</button>
 
-    <div class="result">
       <h2>Result</h2>
-      <p id="result-text" class="muted">Nothing scanned yet.</p>
+
+      <!-- clickable link if URL -->
+      <p id="result-text" class="result-link"></p>
 
       <div class="result-actions">
         <button id="copy-btn" class="btn small" disabled>Copy</button>
-        <button id="open-btn" class="btn small" disabled>Open</button>
       </div>
     </div>
+
   </section>
 </main>
 
@@ -62,5 +67,6 @@
 
 <script src="https://unpkg.com/html5-qrcode"></script>
 <script src="/assets/js/script.js"></script>
+
 </body>
 </html>
