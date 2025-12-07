@@ -7,10 +7,10 @@
   --bg: #0b0f19;
   --text: #ffffff;
   --muted: #9aa0b1;
-  --accent: #4d9fff;            /* Google Lens Blue */
+  --accent: #4d9fff;
   --accent-soft: rgba(77,159,255,0.18);
-  --surface: rgba(18, 22, 33, 0.75);
-  --surface-strong: rgba(18, 22, 33, 0.92);
+  --surface: rgba(18,22,33,0.75);
+  --surface-strong: rgba(18,22,33,0.92);
   --radius: 22px;
   --shadow: 0 20px 50px rgba(0,0,0,0.55);
 }
@@ -80,7 +80,6 @@ body {
   margin: 0 auto;
 }
 
-/* HERO */
 .hero h1 {
   text-align: center;
   margin: 10px 0 18px;
@@ -101,12 +100,12 @@ body {
   backdrop-filter: blur(14px);
 }
 
-/* VIDEO PREVIEW AREA */
+/* VIDEO PREVIEW RECTANGLE */
 .video-wrapper {
   position: relative;
   width: 100%;
-  aspect-ratio: 3 / 4;
-  border-radius: 24px;
+  aspect-ratio: 3/4;
+  border-radius: 20px;
   overflow: hidden;
   background: #000;
   box-shadow: var(--shadow);
@@ -115,7 +114,6 @@ body {
 #preview {
   width: 100%;
   height: 100%;
-  position: relative;
 }
 
 #preview video {
@@ -124,48 +122,23 @@ body {
   object-fit: cover !important;
 }
 
-/* GOOGLE LENS–STYLE CIRCULAR SCAN FRAME */
-.scan-frame {
+/* ANIMATED BORDER */
+.scan-border {
   position: absolute;
-  width: 65%;
-  height: 65%;
-  border: 3px solid rgba(255,255,255,0.9);
-  border-radius: 50%;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  box-shadow: 0 0 35px rgba(77,159,255,0.45);
-  animation: pulseFrame 2.2s ease-in-out infinite;
+  inset: 0;
+  border-radius: 20px;
+  border: 3px solid rgba(77,159,255,0.6);
+  animation: glowBorder 2s infinite ease-in-out;
   pointer-events: none;
 }
 
-@keyframes pulseFrame {
-  0% { box-shadow: 0 0 18px rgba(77,159,255,0.35); }
-  50% { box-shadow: 0 0 50px rgba(77,159,255,0.7); }
-  100% { box-shadow: 0 0 18px rgba(77,159,255,0.35); }
+@keyframes glowBorder {
+  0% { box-shadow: 0 0 10px rgba(77,159,255,0.4); }
+  50% { box-shadow: 0 0 28px rgba(77,159,255,0.8); }
+  100% { box-shadow: 0 0 10px rgba(77,159,255,0.4); }
 }
 
-/* MOVING SCAN LINE (Google Lens effect) */
-.scan-line {
-  position: absolute;
-  width: 50%;
-  height: 3px;
-  background: rgba(77,159,255,0.9);
-  top: 20%;
-  left: 50%;
-  transform: translateX(-50%);
-  border-radius: 5px;
-  animation: scanMove 2.8s linear infinite;
-  box-shadow: 0 0 12px rgba(77,159,255,0.8);
-}
-
-@keyframes scanMove {
-  0% { top: 20%; opacity: 1; }
-  50% { top: 70%; opacity: 1; }
-  100% { top: 20%; opacity: 1; }
-}
-
-/* FLOATING + BUTTON FOR IMAGE UPLOAD */
+/* UPLOAD BUTTON */
 .fab-btn {
   position: absolute;
   bottom: 14px;
@@ -174,70 +147,45 @@ body {
   height: 55px;
   border-radius: 50%;
   background: linear-gradient(135deg, #4d9fff, #1d75ff);
-  color: #ffffff;
+  color: #fff;
   font-size: 2rem;
   border: none;
+  box-shadow: 0 6px 25px rgba(0,0,0,0.45);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 6px 25px rgba(0,0,0,0.45);
   cursor: pointer;
-  z-index: 20;
   transition: 0.2s ease;
+  z-index: 20;
 }
 .fab-btn:active {
   transform: scale(0.9);
 }
 
-/* CONTROLS */
+/* SWITCH CAMERA BUTTON */
 .controls {
-  margin-top: 20px;
+  margin-top: 16px;
   display: flex;
-  flex-direction: column;
-  gap: 12px;
-  align-items: center;
-}
-
-.center-btn {
-  width: 70%;
-}
-
-/* BUTTONS */
-.btn {
-  padding: 14px 20px;
-  border-radius: 30px;
-  background: rgba(255,255,255,0.08);
-  color: white;
-  border: none;
-  font-size: 1.05rem;
-  cursor: pointer;
-  transition: 0.2s ease;
-  width: 70%;
-}
-
-.btn.primary {
-  background: linear-gradient(135deg, #4d9fff, #1d75ff);
-  color: white;
-  font-weight: 600;
-  box-shadow: 0 0 18px rgba(77,159,255,0.35);
+  justify-content: center;
 }
 
 .btn.small {
-  width: 40%;
-  font-size: 0.85rem;
   padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.09);
+  color: white;
+  border: none;
+  font-size: 0.9rem;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
 }
-
-.btn:active {
-  transform: scale(0.96);
-}
-.btn:disabled {
-  opacity: 0.4;
+.btn.small:active {
+  transform: scale(0.95);
 }
 
 /* RESULT BOX */
 .result {
-  margin-top: 22px;
+  margin-top: 20px;
   padding: 18px;
   background: var(--surface);
   border-radius: 18px;
@@ -246,21 +194,16 @@ body {
 }
 
 .result-actions {
-  margin-top: 12px;
   display: flex;
-  gap: 12px;
+  gap: 10px;
+  margin-top: 12px;
 }
 
 /* FOOTER */
 .footer {
   text-align: center;
-  margin: 34px 0 20px;
+  margin-top: 30px;
+  margin-bottom: 20px;
   color: var(--muted);
   font-size: 0.85rem;
-}
-
-/* RESPONSIVE */
-@media (min-width: 620px) {
-  .btn { width: 50%; }
-  .scan-frame { width: 55%; height: 55%; }
 }
