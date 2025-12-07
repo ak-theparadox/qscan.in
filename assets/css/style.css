@@ -15,122 +15,61 @@
   --shadow: 0 20px 50px rgba(0,0,0,0.55);
 }
 
-/* BACKGROUND */
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--text);
-  font-family: -apple-system, BlinkMacSystemFont, "Roboto", sans-serif;
-}
+/* BG */
+body { margin: 0; background: var(--bg); color: var(--text); font-family: "Roboto", sans-serif; }
 
 /* HEADER */
 .top-bar {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  padding: 14px 18px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: rgba(11,15,25,0.7);
-  backdrop-filter: blur(14px);
+  position: sticky; top: 0; z-index: 50;
+  padding: 14px 18px; display: flex; justify-content: space-between; align-items: center;
+  background: rgba(11,15,25,0.7); backdrop-filter: blur(14px);
   border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+.brand { display: flex; align-items: center; gap: 8px; }
 
 .logo-dot {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
+  width: 22px; height: 22px; border-radius: 50%;
   background: radial-gradient(circle, #ffffff, var(--accent));
   box-shadow: 0 0 18px var(--accent);
 }
 
-.brand-text {
-  font-weight: 600;
-  font-size: 1rem;
-}
-
-.nav {
-  display: flex;
-  gap: 10px;
-}
+.nav { display: flex; gap: 10px; }
 
 .nav-link {
-  padding: 6px 12px;
-  border-radius: 999px;
-  color: var(--muted);
-  text-decoration: none;
-  font-size: 0.85rem;
+  padding: 6px 12px; border-radius: 999px;
+  color: var(--muted); text-decoration: none; font-size: 0.85rem;
 }
-.nav-link.active {
-  background: var(--accent-soft);
-  color: var(--accent);
-}
+.nav-link.active { background: var(--accent-soft); color: var(--accent); }
 
 /* MAIN AREA */
-.main {
-  padding: 18px;
-  max-width: 500px;
-  margin: 0 auto;
-}
+.main { padding: 18px; max-width: 500px; margin: 0 auto; }
 
 .hero h1 {
-  text-align: center;
-  margin: 10px 0 18px;
-  font-size: 1.9rem;
-  font-weight: 700;
+  text-align: center; font-size: 2rem; font-weight: 700;
   background: linear-gradient(to right, #4d9fff, #7ab2ff);
-  -webkit-background-clip: text;
-  color: transparent;
+  -webkit-background-clip: text; color: transparent;
 }
 
-/* SCANNER CARD */
+/* SCANNER BOX */
 .scanner-card {
-  background: var(--surface-strong);
-  padding: 20px;
-  border-radius: 22px;
-  box-shadow: var(--shadow);
-  border: 1px solid rgba(255,255,255,0.06);
+  background: var(--surface-strong); padding: 20px; border-radius: 22px;
+  box-shadow: var(--shadow); border: 1px solid rgba(255,255,255,0.06);
   backdrop-filter: blur(14px);
 }
 
-/* VIDEO PREVIEW RECTANGLE */
 .video-wrapper {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 3/4;
-  border-radius: 20px;
-  overflow: hidden;
-  background: #000;
+  width: 100%; aspect-ratio: 3/4; position: relative;
+  border-radius: 20px; overflow: hidden; background: #000;
   box-shadow: var(--shadow);
 }
 
-#preview {
-  width: 100%;
-  height: 100%;
-  position: relative;
-}
+#preview { width: 100%; height: 100%; }
 
-#preview video {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
-}
-
-/* ANIMATED BORDER */
 .scan-border {
-  position: absolute;
-  inset: 0;
-  border-radius: 20px;
+  position: absolute; inset: 0; border-radius: 20px;
   border: 3px solid rgba(77,159,255,0.6);
   animation: glowBorder 2s infinite ease-in-out;
-  pointer-events: none;
 }
 
 @keyframes glowBorder {
@@ -139,72 +78,60 @@ body {
   100% { box-shadow: 0 0 10px rgba(77,159,255,0.4); }
 }
 
-/* UPLOAD BUTTON */
-.fab-btn {
-  position: absolute;
-  bottom: 14px;
-  right: 14px;
-  width: 55px;
-  height: 55px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #4d9fff, #1d75ff);
-  color: #fff;
-  font-size: 2rem;
-  border: none;
-  box-shadow: 0 6px 25px rgba(0,0,0,0.45);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: 0.2s ease;
-  z-index: 20;
-}
-.fab-btn:active {
-  transform: scale(0.9);
-}
-
-/* SWITCH CAMERA BUTTON */
-.controls {
-  margin-top: 16px;
-  display: flex;
-  justify-content: center;
+/* INLINE CONTROLS */
+.controls-row {
+  display: flex; justify-content: center; margin-top: 16px; gap: 12px;
 }
 
 .btn.small {
-  padding: 10px 14px;
-  border-radius: 999px;
-  background: rgba(255,255,255,0.09);
-  color: white;
-  border: none;
-  font-size: 0.9rem;
-  cursor: pointer;
-  backdrop-filter: blur(10px);
+  padding: 10px 14px; background: rgba(255,255,255,0.09);
+  color: white; border: none; border-radius: 12px;
+  cursor: pointer; font-size: 0.9rem; backdrop-filter: blur(10px);
 }
-.btn.small:active {
-  transform: scale(0.95);
+.btn.small:active { transform: scale(0.95); }
+
+/* INLINE + BUTTON */
+.fab-inline {
+  font-size: 1.5rem; font-weight: bold;
+  background: linear-gradient(135deg, #4d9fff, #1d75ff);
+  box-shadow: 0 4px 18px rgba(0,0,0,0.4);
 }
 
-/* RESULT BOX */
-.result {
-  margin-top: 20px;
-  padding: 18px;
-  background: var(--surface);
-  border-radius: 18px;
-  box-shadow: var(--shadow);
-  backdrop-filter: blur(12px);
-}
-
-.result-actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 12px;
-}
-
-/* FOOTER */
-.footer {
+/* RESULT POPUP */
+.result-popup {
+  position: fixed; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 85%; max-width: 340px;
+  background: rgba(18,22,33,0.95);
+  padding: 20px; border-radius: 18px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+  backdrop-filter: blur(14px);
+  z-index: 10000;
   text-align: center;
-  margin-top: 30px;
-  margin-bottom: 20px;
-  color: var(--muted);
-  font-size: 0.85rem;
 }
+
+.hidden { display: none; }
+
+.close-btn {
+  position: absolute; top: 8px; right: 12px;
+  background: none; border: none; color: #fff;
+  font-size: 1.8rem; cursor: pointer;
+}
+
+.result-link {
+  margin-top: 10px;
+  font-size: 1rem;
+  word-break: break-all;
+}
+.result-link a {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+/* RESULT BUTTONS */
+.result-actions {
+  margin-top: 14px;
+  display: flex; justify-content: center; gap: 10px;
+}
+
+.footer { text-align: center; margin: 30px 0; color: var(--muted); }
