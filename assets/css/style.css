@@ -78,6 +78,49 @@ animation: glowBorder 2s infinite ease-in-out;
 100% { box-shadow: 0 0 10px rgba(77,159,255,0.4); }
 }
 
+/* --- QR GENERATOR PAGE --- */
+
+.generator-card {
+  background: var(--surface-strong);
+  padding: 20px;
+  border-radius: 22px;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(255,255,255,0.06);
+  backdrop-filter: blur(14px);
+  margin-top: 20px;
+}
+
+.generator-controls {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.generator-controls .btn.primary {
+  flex: 1;
+}
+
+#download-btn {
+  flex: 1;
+}
+
+.qr-output {
+  margin-top: 20px;
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.05);
+  border: 1px dashed rgba(255,255,255,0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 180px;
+}
+
+.qr-output canvas {
+  width: 220px !important;
+  height: 220px !important;
+}
+
 /* INLINE CONTROLS */
 .controls-row {
 display: flex; justify-content: center; margin-top: 16px; gap: 12px;
