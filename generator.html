@@ -8,6 +8,7 @@
 </head>
 
 <body>
+
 <header class="top-bar">
   <div class="brand">
     <span class="logo-dot"></span>
@@ -21,23 +22,28 @@
 </header>
 
 <main class="main">
+
   <section class="hero">
-    <h1>Generate QR Code</h1>
+    <h1>Create Your QR Code</h1>
+    <p class="hero-sub">Instantly generate high-quality QR Codes</p>
   </section>
 
-  <section class="scanner-card">
-    <label class="label">Text / URL</label>
-    <textarea id="qr-text" class="textarea" rows="4" placeholder="Enter text or URL..."></textarea>
+  <section class="generator-card">
 
-    <div class="controls">
-      <button id="generate-btn" class="btn primary center-btn">Generate</button>
-      <button id="download-btn" class="btn small" disabled>Download PNG</button>
+    <label class="label">Enter Text or URL</label>
+    <textarea id="qr-text" class="textarea" rows="4" placeholder="Type something..."></textarea>
+
+    <div class="generator-controls">
+      <button id="generate-btn" class="btn primary">Generate</button>
+      <button id="download-btn" class="btn small" disabled>Download</button>
     </div>
 
     <div id="qr-output" class="qr-output">
-      <p class="muted small">Your QR will appear here.</p>
+      <p class="muted small">Your QR will appear here</p>
     </div>
+
   </section>
+
 </main>
 
 <footer class="footer">
@@ -46,5 +52,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
 <script src="/assets/js/script.js"></script>
+
 </body>
 </html>
