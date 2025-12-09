@@ -1,6 +1,23 @@
-document.addEventListener("DOMContentLoaded", async () => {
+/* ============================================================
+   GLOBAL: RUN AFTER DOM LOAD
+   Detects which page is open (scanner or generator)
+   ============================================================ */
+document.addEventListener("DOMContentLoaded", () => {
+  initScanner();
+  initGenerator();
+});
 
+
+
+/* ============================================================
+   SCANNER PAGE LOGIC
+   ============================================================ */
+function initScanner() {
+
+  // Check if preview element exists (only scanner page)
   const previewId = "preview";
+  if (!document.getElementById(previewId)) return;
+
   const flipBtn = document.getElementById("flip-btn");
   const uploadBtn = document.getElementById("upload-btn");
   const fileInput = document.getElementById("file-input");
@@ -8,7 +25,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   const popup = document.getElementById("result-popup");
   const closePopupBtn = document.getElementById("close-popup");
   const resultText = document.getElementById("result-text");
-
   const copyBtn = document.getElementById("copy-btn");
 
   let qr = null;
@@ -22,7 +38,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   function showPopup(text) {
     copyBtn.disabled = false;
 
-    // Make link clickable
     if (isURL(text)) {
       resultText.innerHTML = `<a href="${text}" target="_blank">${text}</a>`;
     } else {
@@ -35,25 +50,32 @@ document.addEventListener("DOMContentLoaded", async () => {
   closePopupBtn.onclick = () => popup.classList.add("hidden");
 
   copyBtn.onclick = () => {
-    const txt = resultText.textContent;
-    navigator.clipboard.writeText(txt);
+    navigator.clipboard.writeText(resultText.textContent);
   };
 
-  // CAMERA START
+  // START CAMERA
   async function startCamera() {
-    cameras = await Html5Qrcode.getCameras();
-    if (!cameras.length) return;
+    try {
+      cameras = await Html5Qrcode.getCameras();
+      if (!cameras.length) return;
 
-    camIndex =
-      cameras.findIndex(c => c.label.toLowerCase().includes("back")) || 0;
+      // prioritize back camera
+      camIndex = cameras.findIndex(c =>
+        c.label.toLowerCase().includes("back")
+      );
+      if (camIndex < 0) camIndex = 0;
 
-    qr = new Html5Qrcode(previewId);
+      qr = new Html5Qrcode(previewId);
 
-    await qr.start(
-      cameras[camIndex].id,
-      { fps: 15, qrbox: 260 },
-      decoded => showPopup(decoded)
-    );
+      await qr.start(
+        cameras[camIndex].id,
+        { fps: 15, qrbox: 260 },
+        decoded => showPopup(decoded)
+      );
+
+    } catch (err) {
+      console.error("Camera start failed:", err);
+    }
   }
 
   startCamera();
@@ -72,7 +94,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     );
   };
 
-  // UPLOAD IMAGE
+  // UPLOAD IMAGE → SCAN
   uploadBtn.onclick = () => fileInput.click();
 
   fileInput.onchange = e => {
@@ -80,6 +102,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!file) return;
 
     const reader = new FileReader();
+
     reader.onload = async () => {
       try {
         const result = await Html5Qrcode.scanImage(reader.result, false);
@@ -88,6 +111,55 @@ document.addEventListener("DOMContentLoaded", async () => {
         showPopup("Invalid QR / Barcode");
       }
     };
+
     reader.readAsDataURL(file);
   };
-});
+}
+
+
+
+
+/* ============================================================
+   QR GENERATOR PAGE LOGIC
+   ============================================================ */
+function initGenerator() {
+
+  const input = document.getElementById("qr-text");
+  const generateBtn = document.getElementById("generate-btn");
+  const downloadBtn = document.getElementById("download-btn");
+  const output = document.getElementById("qr-output");
+
+  // If generator elements don't exist → skip
+  if (!input || !generateBtn || !output) return;
+
+  generateBtn.onclick = () => {
+    const text = input.value.trim();
+
+    if (!text) {
+      output.innerHTML = `<p class="muted small">Please enter some text.</p>`;
+      downloadBtn.disabled = true;
+      return;
+    }
+
+    output.innerHTML = ""; // clear output
+
+    QRCode.toCanvas(text, { width: 260 }, (err, canvas) => {
+      if (err) {
+        output.innerHTML = `<p class="muted small">Error generating QR.</p>`;
+        return;
+      }
+
+      output.appendChild(canvas);
+
+      // Enable download
+      downloadBtn.disabled = false;
+
+      downloadBtn.onclick = () => {
+        const link = document.createElement("a");
+        link.href = canvas.toDataURL("image/png");
+        link.download = "qscan-qr.png";
+        link.click();
+      };
+    });
+  };
+}
