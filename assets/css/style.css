@@ -78,47 +78,90 @@ animation: glowBorder 2s infinite ease-in-out;
 100% { box-shadow: 0 0 10px rgba(77,159,255,0.4); }
 }
 
-/* --- QR GENERATOR PAGE --- */
+/* --- QR GENERATOR PAGE (CLEAN & PROPERLY ALIGNED) --- */
 
 .generator-card {
   background: var(--surface-strong);
-  padding: 20px;
+  padding: 24px;
   border-radius: 22px;
   box-shadow: var(--shadow);
-  border: 1px solid rgba(255,255,255,0.06);
-  backdrop-filter: blur(14px);
-  margin-top: 20px;
+  border: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(18px);
+  margin-top: 24px;
 }
 
+/* Label (Text / URL) */
+.label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+/* Textarea styling */
+.textarea {
+  width: 100%;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.06);
+  padding: 12px 14px;
+  font-size: 1rem;
+  color: white;
+  resize: none;
+  outline: none;
+}
+
+.textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(77,159,255,0.4);
+}
+
+/* Controls Row */
 .generator-controls {
   display: flex;
-  gap: 10px;
-  margin-top: 12px;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 18px;
 }
 
-.generator-controls .btn.primary {
+/* Primary Button */
+.btn.primary {
   flex: 1;
+  padding: 12px;
+  border-radius: 14px;
+  font-size: 1rem;
+  font-weight: 600;
 }
 
+/* Download Button */
 #download-btn {
   flex: 1;
+  padding: 12px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.12);
+  color: white;
+  backdrop-filter: blur(10px);
 }
 
+/* QR Output container */
 .qr-output {
-  margin-top: 20px;
-  padding: 16px;
-  border-radius: 18px;
-  background: rgba(255,255,255,0.05);
+  margin-top: 24px;
+  padding: 20px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.06);
   border: 1px dashed rgba(255,255,255,0.3);
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 180px;
+  min-height: 240px;
+  text-align: center;
 }
 
+/* Generated QR */
 .qr-output canvas {
-  width: 220px !important;
-  height: 220px !important;
+  width: 240px !important;
+  height: 240px !important;
+  display: block;
 }
 
 /* INLINE CONTROLS */
