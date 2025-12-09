@@ -46,7 +46,7 @@ color: var(--muted); text-decoration: none; font-size: 0.85rem;
 .main { padding: 18px; max-width: 500px; margin: 0 auto; }
 
 .hero h1 {
-text-align: center; font-size: 2rem; font-weight: 700;
+text-align: center; font-size: 1.5rem; font-weight: 700;
 background: linear-gradient(to right, #4d9fff, #7ab2ff);
 -webkit-background-clip: text; color: transparent;
 }
