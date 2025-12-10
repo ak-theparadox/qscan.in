@@ -40,9 +40,11 @@ body {
   font-size: 1.12rem;   /* larger than nav items */
   font-weight: 800;
   color: #ffffff;
+  line-height:1;
   display: flex;
   align-items: center;
   gap: 8px;
+  margin-right:6px; /* tiny spacing before nav */
   cursor: default;      /* no click */
   user-select: none;    /* cannot select */
 }
@@ -50,12 +52,6 @@ body {
 .brand-text:hover {
   opacity: 1;           /* no hover effect */
   cursor: default;
-}
-
-.logo-dot {
-  width: 22px; height: 22px; border-radius: 50%;
-  background: radial-gradient(circle, #ffffff, var(--accent));
-  box-shadow: 0 0 18px var(--accent);
 }
 
 /* NAVIGATION */
