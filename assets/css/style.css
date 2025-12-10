@@ -35,13 +35,21 @@ body {
 /* CLICKABLE BRAND */
 .brand { display: flex; align-items: center; gap: 8px; }
 
-.brand-link {
-  text-decoration: none;
-  color: inherit;
+/* NON-CLICKABLE BRAND TEXT (white, bold, bigger) */
+.brand-text {
+  font-size: 1.12rem;   /* larger than nav items */
+  font-weight: 800;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: default;      /* no click */
+  user-select: none;    /* cannot select */
 }
 
-.brand-link:hover {
-  opacity: 0.85;
+.brand-text:hover {
+  opacity: 1;           /* no hover effect */
+  cursor: default;
 }
 
 .logo-dot {
