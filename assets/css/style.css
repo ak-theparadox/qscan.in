@@ -59,10 +59,14 @@ body {
 }
 
 /* NAVIGATION */
-.nav { display: flex; gap: 4px; }
+.nav {
+  display: flex;
+  gap: 3px;      /* reduced spacing */
+  margin-left: auto;   /* THIS pushes nav fully to the right */
+}
 
 .nav-link {
-  padding: 6px 12px;
+  padding: 5px 10px;
   border-radius: 999px;
   color: var(--muted);
   text-decoration: none;
