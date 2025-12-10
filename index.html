@@ -13,11 +13,14 @@
 
 <header class="top-bar">
   <div class="brand">
-    <span class="logo-dot"></span>
-    <span class="brand-text">QuickScan</span>
+    <a href="/about.html" class="brand-text brand-link">
+      <span class="logo-dot"></span>
+      QuickScan
+    </a>
   </div>
 
   <nav class="nav">
+    <a href="/about.html" class="nav-link">About</a>
     <a href="/" class="nav-link active">Scan</a>
     <a href="/generator.html" class="nav-link">Generate</a>
   </nav>
@@ -47,10 +50,8 @@
     <!-- Result Popup Dialog -->
     <div id="result-popup" class="result-popup hidden">
       <button class="close-btn" id="close-popup">×</button>
-
       <h2>Result</h2>
 
-      <!-- clickable link if URL -->
       <p id="result-text" class="result-link"></p>
 
       <div class="result-actions">
@@ -61,8 +62,7 @@
   </section>
 </main>
 
-<footer class="footer">
-</footer>
+<footer class="footer"></footer>
 
 <script src="https://unpkg.com/html5-qrcode"></script>
 <script src="/assets/js/script.js"></script>
