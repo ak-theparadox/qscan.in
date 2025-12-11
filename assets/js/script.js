@@ -97,24 +97,21 @@ function initScanner() {
   // UPLOAD IMAGE → SCAN
   uploadBtn.onclick = () => fileInput.click();
 
-  fileInput.onchange = e => {
-    const file = e.target.files[0];
-    if (!file) return;
+  fileInput.onchange = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
 
-    const reader = new FileReader();
-
-    reader.onload = async () => {
-      try {
-        const result = await Html5Qrcode.scanImage(reader.result, false);
-        showPopup(result);
-      } catch {
-        showPopup("Invalid QR / Barcode");
-      }
-    };
-
-    reader.readAsDataURL(file);
-  };
-}
+  try {
+    const html5Qr = new Html5Qrcode("preview-temp");
+    
+    const result = await html5Qr.scanFile(file, false);
+    showPopup(result);
+    
+    html5Qr.clear();
+  } catch (err) {
+    showPopup("Invalid QR / Barcode");
+  }
+};
 
 
 
