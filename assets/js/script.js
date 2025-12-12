@@ -30,6 +30,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function showPopup(text) {
+      if(navigator.vibrate{
+navigator.vibrate(120);//short vibration
+}
 
       if (isURL(text)) {
         resultText.innerHTML = `<a href="${text}" target="_blank">${text}</a>`;
