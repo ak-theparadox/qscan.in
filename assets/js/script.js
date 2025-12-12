@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function showPopup(text) {
-      if(navigator.vibrate{
+      if(navigator.vibrate){
 navigator.vibrate(120);//short vibration
 }
 
