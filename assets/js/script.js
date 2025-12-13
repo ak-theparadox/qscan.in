@@ -52,44 +52,56 @@ navigator.vibrate(120);//short vibration
 
     /* ------------ START CAMERA ---------------- */
     async function startScanner() {
-      cameras = await Html5Qrcode.getCameras();
+  cameras = await Html5Qrcode.getCameras();
 
-      if (!cameras.length) {
-        alert("No camera detected.");
-        return;
-      }
+  if (!cameras || cameras.length === 0) {
+    alert("No camera detected.");
+    return;
+  }
 
-      // Prefer back camera
-      currentCam = cameras.findIndex(c =>
-        c.label.toLowerCase().includes("back")
-      );
-      if (currentCam === -1) currentCam = 0;
+  // Prefer BACK camera
+  let backCamIndex = cameras.findIndex(cam =>
+    cam.label.toLowerCase().includes("back") ||
+    cam.label.toLowerCase().includes("rear")
+  );
 
-      qrScanner = new Html5Qrcode(previewId);
+  if (backCamIndex === -1) {
+    backCamIndex = cameras.length - 1; // fallback (usually back cam)
+  }
 
-      await qrScanner.start(
-        cameras[currentCam].id,
-        { fps: 15, qrbox: { width: 260, height: 260 } },
-        decoded => showPopup(decoded)
-      );
-    }
+  currentCam = backCamIndex;
+
+  qrScanner = new Html5Qrcode(previewId);
+
+  await qrScanner.start(
+    { deviceId: { exact: cameras[currentCam].id } }, // 👈 IMPORTANT
+    {
+      fps: 15,
+      qrbox: { width: 260, height: 260 }
+    },
+    decoded => showPopup(decoded)
+  );
+}
 
     startScanner();
 
     /* ------------ FLIP CAMERA ---------------- */
     flipBtn.onclick = async () => {
-      if (!qrScanner) return;
+  if (!qrScanner || !cameras.length) return;
 
-      await qrScanner.stop();
+  await qrScanner.stop();
 
-      currentCam = (currentCam + 1) % cameras.length;
+  currentCam = (currentCam + 1) % cameras.length;
 
-      await qrScanner.start(
-        cameras[currentCam].id,
-        { fps: 15, qrbox: { width: 260, height: 260 } },
-        decoded => showPopup(decoded)
-      );
-    };
+  await qrScanner.start(
+    { deviceId: { exact: cameras[currentCam].id } }, // 👈 FORCE CAMERA
+    {
+      fps: 15,
+      qrbox: { width: 260, height: 260 }
+    },
+    decoded => showPopup(decoded)
+  );
+};
 
     /* ------------ UPLOAD QR IMAGE ---------------- */
     uploadBtn.onclick = () => fileInput.click();
