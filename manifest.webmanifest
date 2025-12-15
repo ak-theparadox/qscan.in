@@ -1,6 +1,6 @@
 {
-  "name": "QScan.in — QR & Barcode Scanner",
-  "short_name": "QScan",
+  "name": "Qscan.in — QR & Barcode Scanner",
+  "short_name": "Qscan",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#020617",
